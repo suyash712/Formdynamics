@@ -1,0 +1,215 @@
+
+
+{% extends 'home.html' %}
+{% block head %}
+<style>
+  .accordion-button:hover {
+    background-color: rgb(75, 75, 211);
+    color: white;
+  }
+</style>
+{% endblock %}
+{% block body %}
+
+<main id="main" class="main">
+    <div class="row">
+        <div class="col modal-header">
+            <h3> <span class="badge text-bg-primary">SALESORDERS</span></h3>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="col" style="justify-content: end; display: flex;">
+            <div class="btn-group center">
+                <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="margin-left:100px;">
+                    Sort
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" onclick="sortByDate()">By Date</a></li>
+                    <li><a class="dropdown-item" onclick="sortBySalesOrderID()">By Sales Order No</a></li>
+                    <li><a class="dropdown-item" onclick="sortByVendorName()">By Vendor Name</a></li>
+                </ul>
+            </div>
+            <div class="" style="justify-content: end; display: flex; margin-left: 10px;">
+                <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN...">
+            </div>
+            <button id="deleteButton" class="btn btn-danger" style="display: none; margin-left: 10px;" onclick="deleteSelected()">Delete Selected</button>
+        </div>
+        
+    </div>
+
+    <div id="accordionContainer">
+        {% load static %}
+        {% for i in sales %}
+        <div class="accordion" id="accordionExample{{ forloop.counter }}" style="margin-top: 5px;">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                        <input type="checkbox" class="form-check-input" value="{{ i.salesorder_id }}" onchange="toggleDeleteButton(event)" style="margin-right: 10px;">
+                        <strong style="margin-right: 50px;">SALESORDER ID: {{i.salesorder_id}}</strong> <br>
+                        <strong style="margin-right: 50px;">DATE: {{i.date}}</strong><br>
+                        <strong style="font-size: 15px;">CUSTOMER NAME: {{i.customer_name}}</strong><br>
+                    </button>
+                </h2>
+                <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample{{ forloop.counter }}">
+                    <div class="accordion-body">
+                        <ul>
+                            <li>
+                                <div class="row">
+                                    <div class="col">
+                                        <strong>SALESORDER ID : {{ i.salesorder_id }}</strong> <br>
+                                      <strong>ZCRM POTENTIAL ID : {{ i.zcrm_potential_id }}</strong><br>
+                                      <strong>ZCRM POTENTIAL NAME : {{ i.zcrm_potential_name }}</strong> <br>
+                                      <strong>CUSTOMER NAME : {{ i.customer_name }}</strong> <br>
+                                      <strong>CUSTOMER ID : {{ i.customer_id }}</strong><br>
+                                      <strong>EMAIL : {{ i.email }}</strong> <br>
+                                      <strong>DELIVERY DATE : {{ i.delivery_date }}</strong><br>
+                                      <strong>COMPANY NAME: {{ i.company_name }}</strong><br>
+                                      <strong>COLOR CODE : {{ i.color_code }}</strong><br>
+                                      <strong>CURRENT SUB STATUS ID : {{ i.current_sub_status_id }}</strong> <br>
+                                      <strong>CURRENT SUB STATUS : {{ i.current_sub_status }}</strong> <br>
+                                      <strong>PICKUP LOCATION ID : {{ i.pickup_location_id }}</strong><br>
+                                      <strong>SALESORDER NO : {{ i.salesorder_number }}</strong><br>
+                                      <strong>REFERENCE NO : {{ i.reference_number }}</strong><br>
+                                      <strong>DATE : {{ i.date }}</strong><br>
+                                      <strong>SHIPMENT DATE : {{ i.shipment_date }}</strong> <br>
+                                      <strong> SHIPMENT DAYS : {{ i.shipment_days }}</strong><br>
+                                      <strong>DUE BY DAYS : {{ i.due_by_days }}</strong><br>
+                                      <strong>DUE IN DAYS : {{ i.due_in_days }}</strong><br>
+                                  </div>
+                                  <div class="col">
+                                      <strong>CURRENCY ID : {{ i.currency_id }}</strong><br>
+                                      <strong> SOURCE : {{ i.source }}</strong><br>
+                                      <strong>CURRENCY CODE: {{ i.currency_code }}</strong><br>
+                                      <strong>TOTAL : {{ i.total }}</strong> <br>
+                                      <strong> BCY TOTAL : {{ i.bcy_total }}</strong> <br>
+                                      <strong>TOTAL INVOICED AMOUNT: {{ i.total_invoiced_amount }}</strong> <br>
+                                      <strong>CREATED TIME : {{ i.created_time }}</strong><br>
+                                      <strong>LAST MODIFIED TIME : {{ i.last_modified_time }}</strong> <br>
+                                      <strong>IS EMAILED : {{ i.is_emailed }}</strong> <br>
+                                      <strong>QUANTITY INVOICE : {{ i.quantity_invoiced }}</strong> <br>
+                                      <strong>ORDER STATUS : {{ i.order_status }}</strong> <br>
+                                      <strong>INVOICED STATUS : {{ i.invoiced_status }}</strong><br>
+                                      <strong>PAID STATUS: {{ i.paid_status }}</strong> <br>
+                                      <strong>STATUS : {{ i.status }}</strong> <br>
+                                      <strong> SALES PERSON NAME : {{ i.salesperson_name }}</strong> <br>
+                                      <strong>BRANCH ID: {{ i.branch_id }}</strong> <br>
+                                      <strong>  BRANCH NAME : {{ i.branch_name }}</strong><br>
+                                      <strong>HAS ATTACHMENT : {{ i.has_attachment }}</strong> <br>
+                                      <strong>CUSTOM FIELD LIST: {{ i.custom_fields_list }}</strong> <br>
+                                      <strong>DELIVERY METHOD : {{ i.delivery_method }}</strong><br>
+                                      <strong>DELIVERY METHOD ID : {{ i.delivery_method_id }}</strong> <br>
+                                    </div>
+                                    <!-- Display sales order details -->
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    function toggleDeleteButton() {
+        var checkboxes = document.querySelectorAll('.form-check-input:checked');
+        var deleteButton = document.getElementById('deleteButton');
+        
+        if (checkboxes.length > 0) {
+            deleteButton.style.display = 'block';
+        } else {
+            deleteButton.style.display = 'none';
+        }
+    }
+
+    function deleteSelected() {
+        var checkboxes = document.querySelectorAll('.form-check-input:checked');
+        var salesOrderIds = Array.from(checkboxes).map(checkbox => checkbox.value);
+        
+        if (salesOrderIds.length === 0) {
+            alert('Please select at least one sales order to delete.');
+            return;
+        }
+
+        if (confirm("Are you sure you want to delete the selected sales orders?")) {
+            // Send an AJAX request to delete the selected sales orders
+            fetch('/delete-selected-sales-orders/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ salesOrderIds: salesOrderIds })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reload the page after successful deletion
+                    window.location.reload();
+                } else {
+                    alert('Failed to delete the selected sales orders.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    }
+
+    function sortByDate() {
+    var items = document.querySelectorAll('.accordion');
+    var sortedItems = Array.from(items).sort((a, b) => {
+        var dateA = new Date(a.querySelector('strong:nth-child(13)').textContent.trim()); // Adjust this selector as needed
+        var dateB = new Date(b.querySelector('strong:nth-child(13)').textContent.trim());
+        return dateA - dateB;
+    });
+    var main = document.getElementById('accordionContainer');
+    sortedItems.forEach(item => main.appendChild(item));
+}
+
+function sortBySalesOrderID() {
+    var items = document.querySelectorAll('.accordion');
+    var sortedItems = Array.from(items).sort((a, b) => {
+        var idA = parseInt(a.querySelector('strong:nth-child(1)').textContent.split(': ')[1].trim());
+        var idB = parseInt(b.querySelector('strong:nth-child(1)').textContent.split(': ')[1].trim());
+        return idA - idB;
+    });
+    var main = document.getElementById('accordionContainer');
+    sortedItems.forEach(item => main.appendChild(item));
+}
+
+function sortByVendorName() {
+    var items = document.querySelectorAll('.accordion');
+    var sortedItems = Array.from(items).sort((a, b) => {
+        var vendorA = a.querySelector('.accordion-button strong:nth-child(3)').textContent.split(': ')[1].trim().toLowerCase();
+        var vendorB = b.querySelector('.accordion-button strong:nth-child(3)').textContent.split(': ')[1].trim().toLowerCase();
+        return vendorA.localeCompare(vendorB);
+    });
+    var container = document.getElementById('accordionContainer');
+    sortedItems.forEach(item => container.appendChild(item));
+}
+
+
+function search() {
+    var input, filter, accordion, accordionItem, accordionHeader, i, txtValue;
+    input = document.getElementById('searchInput');
+    filter = input.value.toUpperCase();
+    accordion = document.querySelectorAll('.accordion');
+    
+    for (i = 0; i < accordion.length; i++) {
+        accordionItem = accordion[i];
+        accordionHeader = accordionItem.querySelector('.accordion-header');
+        txtValue = accordionHeader.textContent || accordionHeader.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            accordionItem.style.display = "";
+        } else {
+            accordionItem.style.display = "none";
+        }
+    }
+}
+
+
+</script>
+{% endblock %}
+

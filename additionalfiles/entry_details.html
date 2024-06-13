@@ -1,0 +1,185 @@
+{% extends 'home.html'%}
+{% block body %}
+<main id="main" class="main">
+    
+    <span class="badge text-bg-secondary" style="height: 25px; width: auto;">GRNNO: {{ entry.GRNNO }}</span>
+    <span class="badge text-bg-secondary" style="height: 25px; width: auto;">STATUS: {{ entry.order_status }}  </span>
+{% if entry.order_status == 'Completed' %}
+<button type="button" class="btn btn-primary btn-sm" style="margin-left: 780px;" data-bs-toggle="modal" data-bs-target="#deliveryModal">
+    Delivery
+</button>
+{% else %}
+    <button type="button" class="btn btn-primary btn-sm" style="margin-left: 780px;">delivery</button>
+{% endif %}
+
+<div class="modal fade" id="deliveryModal" tabindex="-1" aria-labelledby="deliveryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryModalLabel">Delivery Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% csrf_token %}
+                <form method="post" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">SO ORDER</label>
+                        <input type="text" name="SOORDER" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">FINISHED JOB QTY</label>
+                        <input type="number" name="FINISHEDQTY" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">PDI REPORT</label>
+                        <input class="form-control" name="PDIREPORT" type="file" id="formFile" required>    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">TOTAL QUANTITY DISPATCHED</label>
+                        <input type="number" name="TTL_QNT_DISPATCH" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">INVOICEN NO./DELIVERY CHALLAN</label>
+                        <input type="text" name="INVOICENO" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">CUSTOMER NAME</label>
+                        <input type="text" name="CUSTOMERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">BUYER NAME</label>
+                        <input type="text" name="BUYERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">SALES REPRESENTATIVE</label>
+                        <input type="text" name="SALESREPRESENT" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">PART COST</label>
+                        <input type="number" name="PARTCOST" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                      </div>
+                      
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>
+
+   <div class="row" style="margin-top: 10px;">
+      <div class="col" >
+        
+            <ul class="list-group">
+                <li class="list-group-item active" aria-current="true" style="text-align: center;">PRODUCT INFO</li>
+                <li class="list-group-item">GRNNO: <a style="font-weight: bold;">{{ entry.GRNNO }}</a></li>
+                <li class="list-group-item">VENDOR NAME:  <a style="font-weight: bold;">{{ entry.vendor_name }}</a></li>
+                <li class="list-group-item">EXP TIME:  <a style="font-weight: bold;"> {{ entry.exptime }}</a></li>
+                <li class="list-group-item">STATUS: 
+                  {% if work_done_percentage == 100 %}
+                      <span class="status-completed" style="font-weight: bold; color: green;">COMPLETED</span>
+                  {% elif work_done_percentage >= 75 %}
+                      <span class="status-almost-done" style="font-weight: bold; color: ORANGE;">ALMOST DONE</span>
+                  {% elif work_done_percentage >= 50 %}
+                      <span class="status-almost-done" style="font-weight: bold; color: orange;">HALF A WAY</span>
+                  {% elif work_done_percentage >= 25 %}
+                      <span class="status-almost-done" style="font-weight: bold; color: RED;">WORKING</span>    
+                  {% else %}
+                      <span class="status-pending" style="font-weight: bold; color: RED;">NOT STARTED YET</span>
+                  {% endif %}
+              </li>  
+              </ul>
+        
+              
+       </div>
+       {% if upcoming_process_details %}
+       <div class="col">
+           <div class="list-group">
+               {% with upcoming_process=upcoming_process_details.0 %}
+                   <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+                       <div class="d-flex w-100 justify-content-between">
+                           <h5 class="mb-1">UPCOMING PROCESS</h5>
+                           <small>{{ upcoming_process.due_date|timesince }} after</small>
+                       </div>
+                       <p class="mb-1">{{ upcoming_process.process }}</p>
+                       <small>{{ upcoming_process.description }}</small>
+                   </a>
+               {% endwith %}
+           </div>
+       </div>
+   {% endif %}
+    <div class="col">
+        <div class="list-group">
+            {% if last_completed %}
+                <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">LAST PROCESS DONE</h5>
+                        <small>{{ last_completed.completed_time|timesince }} ago</small>
+                    </div>
+                    <p class="mb-1">{{ last_completed.process }}</p>
+                    <small>{{ last_completed.description }}</small>
+                </a>
+            {% endif %}
+       </div>
+   </div>
+
+   <div class="row" style="margin-top: 20px; margin-left: 10px; color: blue;">PROGRESS BAR:</div>
+       <div class="row" style="height: 100px; width: 100%; justify-content: center; display: flex; border: 1px solid black; align-items: center; border-radius: 10px;">
+        <span>WORK DONE: {{ work_done_percentage }}%</span>
+   
+   <div class="progress-stacked">
+    
+    <div class="progress" role="progressbar" aria-label="Segment one" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100" style=" width: {{ work_done_percentage }}%;">
+      <div class="progress-bar">{{ work_done_percentage }}%</div>
+    </div>
+   
+  </div>
+    </div>
+    <div class="row" style="margin-top: 20px; margin-left: 10px; color: blue;">ORDER STATUS:</div>
+    <div class="row">
+      <div class="list-group">
+          <ol class="list-group list-group-numbered">
+              {% for process_detail in entry.processdetails_set.all %}
+              <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div class="ms-2 me-auto">
+                      <div class="fw-bold">Process {{ forloop.counter }} completed</div>
+                      <div>{{ process_detail.process }} completed</div>
+                      <!-- Add more details about the process here if needed -->
+                  </div>
+                  <span class="badge text-bg-primary rounded-pill">{{ process_detail.completed_time }}</span>
+                  {% if not process_detail.completed %}
+                  <form method="post" action="{% url 'display_entry_details' entry.id %}">
+                      {% csrf_token %}
+                      <input type="hidden" name="process_id" value="{{ process_detail.id }}">
+                      <button type="submit" class="btn btn-primary mark-as-completed-btn" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem; margin-left: 10px;">Mark as Completed</button>
+                  </form>
+                  {% else %}
+                  <span class="badge bg-success">Completed</span>
+                  {% endif %}
+              </li>
+              {% endfor %}
+          </ol>
+      </div>
+  </div>
+</main>
+{% endblock %}
+{% block js %}
+<script>
+  // JavaScript to hide the "Mark as Completed" button if the process is already completed
+  document.querySelectorAll('.list-group-item').forEach(item => {
+      if (item.querySelector('.badge.bg-success')) {
+          item.querySelector('.mark-as-completed-btn').style.display = 'none';
+      }
+  });
+  document.querySelectorAll('.mark-as-completed-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            var confirmed = confirm("Are you sure you want to mark this process as completed?");
+            if (confirmed) {
+                // If confirmed, submit the form
+                button.closest('form').submit();
+            }
+        });
+    });
+</script>{% endblock %}

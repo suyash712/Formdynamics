@@ -1,0 +1,194 @@
+{% extends 'home.html' %}
+{% block head %}
+<style>
+  
+  .accordion-button:hover{
+    background-color: rgb(75, 75, 211);
+    color: white;
+  }
+
+  .dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+  }
+  </style>
+
+{% endblock %}
+{% block body %}
+
+<main id="main" class="main">
+  <div class="row">
+    <div class="col modal-header">
+      <h3> <span class="badge text-bg-primary">PURCHASEORDERS</span></h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="col" style="justify-content: end; display: flex;">
+      <div class="btn-group center">
+        <button type="button" class="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false",style="margin-left:100px;" >
+          SORT
+        </button>
+        <ul class="dropdown-menu" >
+          <li><a class="dropdown-item " onclick="sortByDate()">BY DATE</a></li>
+          <li><a class="dropdown-item" onclick="sortByVendor()">BY VENDOR NAME</a></li>
+        </ul>
+      </div>
+      <div class="" style="justify-content: end; display: flex; margin-left: 10px;">
+        <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN...">
+    </div>
+      
+  </div>
+    {% load static %}
+    {% for i in purchase %}
+    
+    <div class="accordion" id="accordionExample{{ forloop.counter }}">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}" >
+                    <strong style="margin-right: 50px;">PRCHASEORDER ID : {{ i.purchaseorder_id }}</strong> <br>
+                    <strong style="margin-right: 50px;">DATE : {{ i.date }}</strong><br>
+                    <strong style="text-align: center;">VENDOR NAME : {{ i.vendor_name }}</strong><br>
+                    
+
+                    
+                </button>
+            </h2>
+            <div  id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample{{ forloop.counter }}">
+                <div class="accordion-body">
+                    
+                    <ul>
+                        <li>
+                          <div class="row">
+                            <div class="col">
+                            <strong>PRCHASEORDER ID : {{ i.purchaseorder_id }}</strong> <br>
+                            <strong>VENDOR ID : {{ i.vendor_id }}</strong><br>
+                            <strong>VENDOR NAME : {{ i.vendor_name }}</strong> <br>
+                            <strong>COMPANY NAME : {{ i.company_name }}</strong> <br>
+                            <strong> ORDER STATUS : {{ i.order_status }}</strong><br>
+                            <strong>BILLED STATUS : {{ i.billed_status }}</strong> <br>
+                            <strong> STATUS : {{ i.status }}</strong><br>
+                            <strong>COLOR CODE: {{ i.color_code }}</strong><br>
+                            <strong>CURRENT SUB STATUS ID : {{ i.current_sub_status_id }}</strong><br>
+                            <strong>CURRENT SUB STATUS : {{ i.current_sub_status }}</strong> <br>
+                            <strong> PURCHASEORDER NUMBER : {{ i.purchaseorder_number }}</strong> <br>
+                            <strong>REFERENCE NUMBER : {{ i.reference_number }}</strong><br>
+                            <strong>PURCHASE DATE : {{ i.date }}</strong><br>
+                            <strong>DELIVERY DATE : {{ i.delivery_date }}</strong><br>
+                            <strong> DELIVERY DAYS : {{ i.delivery_days }}</strong><br>
+                            <strong>DUE BY DAYS : {{ i.due_by_days }}</strong> <br>
+                          </div>
+                          <div class="col">
+                            <strong> DUE IN DAYS : {{ i.due_in_days }}</strong><br>
+                            <strong>CURRENCY ID : {{ i.currency_id }}</strong><br>
+                            <strong>CURRENCY CODE : {{ i.currency_code }}</strong><br>
+                          
+                            <strong>PRICE PRESISION : {{ i.price_precision }}</strong><br>
+                            <strong> TOTAL : {{ i.total }}</strong><br>
+                            <strong>HAS ATTACHED: {{ i.has_attachment }}</strong><br>
+                            <strong>CREATED TIME : {{ i.created_time }}</strong> <br>
+                            <strong> LAST MODIFIED TIME : {{ i.last_modified_time }}</strong> <br>
+                            <strong>QUANTITY YET TO RECIEVED: {{ i.quantity_yet_to_receive }}</strong> <br>
+                            <strong>QUANTITY MARKED AS RECEIVED : {{ i.quantity_marked_as_received }}</strong><br>
+                            <strong>RECEIVES : {{ i.receives }}</strong> <br>
+                            <strong>CLIENT VIEWED TIME : {{ i.client_viewed_time }}</strong> <br>
+                            <strong>IS VIEWD BY CLIENT : {{ i.is_viewed_by_client }}</strong> <br>
+                            <strong>BRANCH ID : {{ i.branch_id }}</strong> <br>
+                            <strong>BRANCH NAME : {{ i.branch_name }}</strong><br>
+                            
+                          </div>
+                          </div>
+                          </li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</main>
+
+<script>
+  function sortByDate() {
+      var items = document.querySelectorAll('.accordion');
+      var sortedItems = Array.from(items).sort((a, b) => {
+          var dateA = new Date(a.querySelector('strong:nth-child(13)').textContent.trim()); // Assuming date is the 13th child
+          var dateB = new Date(b.querySelector('strong:nth-child(13)').textContent.trim());
+          return dateA - dateB;
+      });
+      var main = document.getElementById('main');
+      sortedItems.forEach(item => main.appendChild(item));
+  }
+</script>
+
+
+<script>
+  
+  
+
+    function sortByVendor() {
+        var items = document.querySelectorAll('.accordion');
+        var sortedItems = Array.from(items).sort((a, b) => {
+            var vendorA = a.querySelector('strong:nth-child(5)').textContent; // Assuming vendor name is the 5th child
+            var vendorB = b.querySelector('strong:nth-child(5)').textContent;
+            return vendorA.localeCompare(vendorB);
+        });
+        var main = document.getElementById('main');
+        sortedItems.forEach(item => main.appendChild(item));
+    }
+</script>
+<script>
+  function search() {
+      var input, filter, accordion, accordionItem, accordionHeader, i, txtValue;
+      input = document.getElementById('searchInput');
+      filter = input.value.toUpperCase();
+      accordion = document.querySelectorAll('.accordion');
+      
+      for (i = 0; i < accordion.length; i++) {
+          accordionItem = accordion[i];
+          accordionHeader = accordionItem.querySelector('.accordion-header');
+          txtValue = accordionHeader.textContent || accordionHeader.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              accordionItem.style.display = "";
+          } else {
+              accordionItem.style.display = "none";
+          }
+      }
+  }
+</script>
+
+
+{% endblock %}

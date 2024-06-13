@@ -1,0 +1,120 @@
+{% extends 'home.html' %}
+{% block head %}
+<style>
+  
+</style> 
+{% endblock %}
+{% block body %}
+<main id="main" class="main">
+    <h3> <span class="badge text-bg-primary">PRODUCTION ENTRY</span></h3>
+    <!-- Table with stripped rows -->
+    <table class="table " id="entryTable">
+        <thead>
+            <tr >
+                <th>GRN NO.</th>
+                <th>VENDOR NAME</th>
+                <th>EXP TIME</th>
+                <th>WORK DONE</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in grn %}
+            <tr class="clickable-row row1" data-href="{% url 'display_entry_details' entry.id %}">
+                <td>{{ entry.GRNNO }}</td>
+                <td>{{ entry.grnentry_STOREOWNER }}</td>
+                <td>{{ entry.grnentry_DATETIME }}</td>
+                <td><button id="dispatchButton{{ entry.id }}" type="button" class="btn btn-primary btn-sm dispatch-button"
+                    data-entry-id="{{ entry.id }}"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem; margin-left: 100px;">
+                    DISPATCH
+                </button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- End Table with stripped rows -->
+
+</main>
+
+<!-- Modal -->
+{% for entry in form_data %}
+<div class="modal fade" id="deliveryModal{{ entry.id }}" tabindex="-1" aria-labelledby="deliveryModalLabel{{ entry.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryModalLabel{{ entry.id }}">Delivery Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Your delivery form goes here -->
+                <form id="deliveryForm{{ entry.id }}" method="post" class="row g-3" action="{% url 'dispatch_details' entry.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">SO ORDER</label>
+                        <input type="text" name="SOORDER" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">FINISHED JOB QTY</label>
+                        <input type="number" min="1" name="FINISHEDQTY" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">PDI REPORT</label>
+                        <input class="form-control" name="PDIREPORT" type="file" id="formFile" required>    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">TOTAL QUANTITY DISPATCHED</label>
+                        <input type="number" min="1" name="TTL_QNT_DISPATCH" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">INVOICEN NO./DELIVERY CHALLAN</label>
+                        <input type="text" name="INVOICENO" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">CUSTOMER NAME</label>
+                        <input type="text" name="CUSTOMERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">BUYER NAME</label>
+                        <input type="text" name="BUYERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">SALES REPRESENTATIVE</label>
+                        <input type="text" name="SALESREPRESENT" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">PART COST</label>
+                        <input type="number" name="PARTCOST" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!-- End Modal -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Handle clicking on the row
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+
+    // Handle clicking on the button within the row
+    $(".dispatch-button").click(function(event) {
+        event.stopPropagation(); // Prevent the row click event from triggering
+        var entryId = $(this).data("entry-id");
+        $("#deliveryModal" + entryId).modal("show"); // Open the modal associated with the button
+    });
+
+    // Disable dispatch button after form submission
+    $("form").submit(function() {
+        var entryId = $(this).attr("id").replace("deliveryForm", "");
+        $("#dispatchButton" + entryId).prop("disabled", true).text("Delivered");
+    });
+});
+</script>
+
+{% endblock %}

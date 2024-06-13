@@ -1,0 +1,126 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main">
+    <div class="col modal-header">
+        <h3> <span class="badge text-bg-primary">Employee Info  </span></h3>
+        <div class="" style="justify-content: end; display: flex;">
+            <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN...">
+        </div>
+        <button type="button" class="btn btn-primary" style="margin-left: 600px;" id="openModalButton">ADD</button>
+
+        <!-- Modal -->
+        
+      </div>
+    <table class="table align-middle" >
+        <thead>
+          <tr class="align-bottom">
+            <th scope="col">NAME</th>
+            <th  class="align-top" scope="col">DESIGNATION</th>
+            <th scope="col">AADHAR CARD NO</th>
+            <th scope="col">MOBILE NO</th>
+          </tr>
+        </thead>
+        <tbody  id="employeeTable">
+            {% for employee in employees %}
+          <tr class="align-bottom accordion">
+            <th scope="row">{{ employee.name}}</th>
+            <td>{{ employee.Designation}}</td>
+            <td>{{ employee.aadhar_no}}</td>
+            <td>{{ employee.mobile_no}}</td>
+            
+            
+          </tr>
+          {% endfor %}
+          
+        </tbody>
+      </table>
+
+      <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'saveemployee' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">NAME</label>
+                            <input type="text" name="name" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">DESIGNATION</label>
+                            <input type="text" min="1" name="Designation" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">AADHAR CARD NO</label>
+                            <input class="form-control" name="aadhar_no" type="text" id="exampleInputEmail1" required>    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">MOBILE NUMBER</label>
+                            <input type="text" name="mobile_no" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        
+                        <button class="btn btn-primary" type="submit">SUBMIT</button>    
+                    </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Custom JS to trigger modal -->
+    <script>
+        document.getElementById('openModalButton').addEventListener('click', function() {
+            $('#myModal').modal('show');
+        });
+    </script>
+  <script>
+    function search() {
+        // Get the value from the search input
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toUpperCase();
+        // Get the table and its rows
+        var table = document.getElementById('employeeTable');
+        var tr = table.getElementsByTagName('tr');
+
+        // Loop through all table rows and hide those that don't match the search query
+        for (var i = 0; i < tr.length; i++) {
+            var tdName = tr[i].getElementsByTagName('th')[0];
+            var tdDesignation = tr[i].getElementsByTagName('td')[0];
+            var tdAadhar = tr[i].getElementsByTagName('td')[1];
+            var tdMobile = tr[i].getElementsByTagName('td')[2];
+
+            if (tdName || tdDesignation || tdAadhar || tdMobile) {
+                var txtValueName = tdName.textContent || tdName.innerText;
+                var txtValueDesignation = tdDesignation.textContent || tdDesignation.innerText;
+                var txtValueAadhar = tdAadhar.textContent || tdAadhar.innerText;
+                var txtValueMobile = tdMobile.textContent || tdMobile.innerText;
+
+                if (txtValueName.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueDesignation.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueAadhar.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueMobile.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                } else {
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
+
+
+
+</main>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main">
+    <div class="col modal-header">
+        <h3> <span class="badge text-bg-primary">MASTER COMPONENT INFO  </span></h3>
+        <div class="" style="justify-content: end; display: flex; margin-left: 10px;">
+            <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN...">
+        </div>
+        <button type="button" class="btn btn-primary" style="margin-left: 600px;" id="openModalButton">ADD</button>
+
+        <!-- Modal -->
+        
+    </div>
+    <table class="table align-middle">
+        <thead>
+          <tr class="align-bottom">
+            <th scope="col">NAME</th>
+            <th class="align-top" scope="col">DRAWING NO</th>
+            <th scope="col">REVISION NO</th>
+            <th scope="col">DRAWING-PDF</th>
+            <th scope="col">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="employeeTable">
+            {% for component in components %}
+          <tr class="align-bottom">
+            <th scope="row">{{ component.description}}</th>
+            <td>{{ component.drawing_no}}</td>
+            <td>{{ component.revision_no}}</td>
+            <td>
+                {% if component.drawing_pdf %}
+                    <a href="{{ component.drawing_pdf.url }}">Download</a>
+                {% else %}
+                    No file
+                {% endif %}
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary editButton" 
+                        data-id="{{ component.id }}" 
+                        data-description="{{ component.description }}" 
+                        data-drawing_no="{{ component.drawing_no }}" 
+                        data-revision_no="{{ component.revision_no }}" 
+                        data-drawing_pdf="{% if component.drawing_pdf %}{{ component.drawing_pdf.url }}{% endif %}">
+                    Edit
+                </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Component Form</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" enctype="multipart/form-data" id="componentForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="description" class="form-label">NAME</label>
+                            <input type="text" name="description" class="form-control" id="description" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="drawing_no" class="form-label">DRAWING NO</label>
+                            <input type="text" name="drawing_no" class="form-control" id="drawing_no" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="revision_no" class="form-label">REVISION NO</label>
+                            <input class="form-control" name="revision_no" type="text" id="revision_no" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="drawing_pdf" class="form-label">DRAWING PDF</label>
+                            <input type="file" name="drawing_pdf" class="form-control" id="drawing_pdf" >
+                        </div>
+                        <button class="btn btn-primary" type="submit">SUBMIT</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Custom JS to trigger modal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('componentForm');
+            const modal = new bootstrap.Modal(document.getElementById('myModal'));
+
+            document.getElementById('openModalButton').addEventListener('click', function () {
+                form.action = '{% url "master_component_form" %}';
+                form.reset();
+                modal.show();
+            });
+
+            document.querySelectorAll('.editButton').forEach(button => {
+                button.addEventListener('click', function () {
+                    const componentId = this.getAttribute('data-id');
+                    form.action = `{% url 'update_master_component' 0 %}`.replace('0', componentId);
+                    document.getElementById('description').value = this.getAttribute('data-description');
+                    document.getElementById('drawing_no').value = this.getAttribute('data-drawing_no');
+                    document.getElementById('revision_no').value = this.getAttribute('data-revision_no');
+                    modal.show();
+                });
+            });
+        });
+    </script>
+
+    <script>
+        function search() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById('employeeTable');
+            var tr = table.getElementsByTagName('tr');
+
+            for (var i = 0; i < tr.length; i++) {
+                var tdName = tr[i].getElementsByTagName('th')[0];
+                var tdDrawingNo = tr[i].getElementsByTagName('td')[0];
+                var tdRevisionNo = tr[i].getElementsByTagName('td')[1];
+                var tdPdf = tr[i].getElementsByTagName('td')[2];
+
+                if (tdName || tdDrawingNo || tdRevisionNo || tdPdf) {
+                    var txtValueName = tdName.textContent || tdName.innerText;
+                    var txtValueDrawingNo = tdDrawingNo.textContent || tdDrawingNo.innerText;
+                    var txtValueRevisionNo = tdRevisionNo.textContent || tdRevisionNo.innerText;
+                    var txtValuePdf = tdPdf.textContent || tdPdf.innerText;
+
+                    if (txtValueName.toUpperCase().indexOf(filter) > -1 ||
+                        txtValueDrawingNo.toUpperCase().indexOf(filter) > -1 ||
+                        txtValueRevisionNo.toUpperCase().indexOf(filter) > -1 ||
+                        txtValuePdf.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    </script>
+</main>
+{% endblock %}

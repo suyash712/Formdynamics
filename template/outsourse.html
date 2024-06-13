@@ -1,0 +1,151 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main">
+    <div class="col modal-header">
+        <h3><span class="badge text-bg-primary">OUTSOURSE</span></h3>
+        <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN..." style="margin-left: 10px;">
+        <button type="button" class="btn btn-primary" style="margin-left: 600px;" id="openModalButton">ADD</button>
+    </div>
+    <table class="table align-middle">
+        <thead>
+            <tr class="align-bottom">
+                <th scope="col">GRNNO</th>
+                <th class="align-top" scope="col">SUPPLIER NAME</th>
+                <th scope="col">OPERATION NAME</th>
+                <th scope="col">PART DESC</th>
+                <th scope="col">QUANTITY</th>
+                <th scope="col">OUT DATE</th>
+                <th scope="col">ACCEPTED QTY</th>
+                <th scope="col">RATE</th>
+                <th scope="col">STATUS</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="employeeTable">
+            {% for material in outsourse %}
+            <tr class="align-bottom">
+                <th scope="row">{{ material.grnno }}</th>
+                <td>{{ material.supplier_name }}</td>
+                <td>{{ material.operation_name }}</td>
+                <td>{{ material.part_desc }}</td>
+                <td>{{ material.quantity }}</td>
+                <td>{{ material.out_date }}</td>
+                <td>{{ material.accepted_qty }}</td>
+                <td>{{ material.rate }}</td>
+                <td>{{ material.status }}</td>
+                <td>
+                    {% if material.status == 'pending' %}
+                    <form method="post" action="{% url 'mark_complete' material.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" onsubmit="return confirmCompletion()">Tick</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Modal for editing -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="height: auto; width: 800px;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">CALIBRATION INSTRUCTION DETAILS</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'outsourseform' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="grnno" class="form-label" style="font-weight: bold;">GRNNO</label>
+                            <input type="text" name="grnno" class="form-control" id="grnno">
+                        </div>
+                        <div class="mb-3">
+                            <label for="supplier_name" class="form-label" style="font-weight: bold;">SUPPLIER NAME</label>
+                            <input type="text" name="supplier_name" class="form-control" id="supplier_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="operation_name" class="form-label" style="font-weight: bold;">OPERATION NAME</label>
+                            <input type="text" name="operation_name" class="form-control" id="operation_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="part_desc" class="form-label" style="font-weight: bold;">PART DESC</label>
+                            <input type="text" name="part_desc" class="form-control" id="part_desc">
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label" style="font-weight: bold;">QUANTITY</label>
+                            <input class="form-control" name="quantity" type="number" id="quantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="out_date" class="form-label" style="font-weight: bold;">OUT DATE</label>
+                            <input class="form-control" name="out_date" type="datetime-local" id="out_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="accepted_qty" class="form-label" style="font-weight: bold;">ACCEPTED QUANTITY</label>
+                            <input class="form-control" name="accepted_qty" type="number" id="accepted_qty" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rate" class="form-label" style="font-weight: bold;">RATE</label>
+                            <input class="form-control" name="rate" type="number" id="rate" required>
+                        </div>
+                        <button class="btn btn-primary" type="submit">SUBMIT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap and Custom JS scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Your JavaScript code for triggering modals and form population goes here
+</script>
+
+<script>
+    function search() {
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toUpperCase();
+        var table = document.getElementById('employeeTable');
+        var tr = table.getElementsByTagName('tr');
+
+        for (var i = 0; i < tr.length; i++) {
+            var tdName = tr[i].getElementsByTagName('th')[0];
+            var tdDesignation = tr[i].getElementsByTagName('td')[0];
+            var tdAadhar = tr[i].getElementsByTagName('td')[1];
+            var tdMobile = tr[i].getElementsByTagName('td')[2];
+
+            if (tdName || tdDesignation || tdAadhar || tdMobile) {
+                var txtValueName = tdName.textContent || tdName.innerText;
+                var txtValueDesignation = tdDesignation.textContent || tdDesignation.innerText;
+                var txtValueAadhar = tdAadhar.textContent || tdAadhar.innerText;
+                var txtValueMobile = tdMobile.textContent || tdMobile.innerText;
+
+                if (txtValueName.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueDesignation.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueAadhar.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueMobile.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                } else {
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
+<script>
+    document.getElementById('openModalButton').addEventListener('click', function() {
+        $('#myModal').modal('show');
+    });
+
+    function confirmCompletion() {
+        return confirm('Are you sure you want to mark this task as complete?');
+    }
+</script>
+
+{% endblock %}

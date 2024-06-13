@@ -1,0 +1,226 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main" style="overflow-x: hidden;">
+
+  <div class="card" style="">
+    <div class="card-body">
+      <h5 class="card-title">GRN ENTRY</h5>
+      {{ n }}
+
+      <!-- Horizontal Form -->
+      <form id="grnForm" method="POST" action="{% url 'savegrndata' %}">
+        {% csrf_token %}
+        <div class="row mb-3">
+          <label for="inputGRNNO" class="col-sm-2 col-form-label">GRN NUMBER<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="text" placeholder="GRNNO" name="GRNNO" class="form-control" id="inputGRNNO" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputMaterialDescription" class="col-sm-2 col-form-label">MATERIAL DESCRIPTION<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <textarea type="text" name="MATERIALDESCRIPTION" class="form-control" id="inputMaterialDescription" required></textarea>
+          </div>
+        </div>
+        <div class="row mb-3">
+          
+          <label for="inputMaterialGrade" class="col-sm-2 col-form-label">MATERIAL GRADE<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <div class="row">
+            <div class="col">
+            <select class="form-select" aria-label="Default select example" name="MATERIALGRADE" id="inputMaterialGrade">
+              <option selected>select materialgrade </option>
+              <option value="EN8">EN8</option>
+              <option value="EN9">EN9</option>
+              <option value="EN24">EN24</option>
+              <option value="EN1A">EN1A</option>
+              <option value="ALU T6 6082">ALU T6 6082</option>
+              <option value="ALU T6 5082">ALU T6 5082</option>
+              <option value="SS 316">SS 316</option>
+              <option value="SS 304">SS 304</option>
+              <option value="MS">MS</option>
+              {% for field in fields %}
+                <option value="{{ field.field }}">{{ field.field }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="">
+              ADD FIELD
+            </button>
+          </div>
+        </div>
+            
+          </div>
+          
+        </div>
+
+        
+
+        <!-- Modal -->
+        
+
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label">QUANTITY<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="number" name="NOQUANTITY" min="1" class="form-control" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label">QUANTITY TYPE<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <select class="form-select" aria-label="Default select example" name="grnentry_QUANTITYTYPE">
+              <option selected>select quantity type</option>
+              <option value="KG">KG</option>
+              <option value="NO_S">NO'S</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputStoreOwner" class="col-sm-2 col-form-label">STORE OWNER<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <select class="form-select" aria-label="Default select example" name="grnentry_STOREOWNER">
+              <option selected>select store owner</option>
+              <option value="YOGESH PALKAR">YOGESH PALKAR</option>
+              <option value="PRANAV PATIL">PRANAV PATIL</option>
+              <option value="SHUBHAM BHALERAO">SHUBHAM BHALERAO</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label">ORDER TYPE<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <select class="form-select" aria-label="Default select example" name="grnentry_ORDERTYPE">
+              <option selected>select order type</option>
+              <option value="WITH MATERIAL">WITH MATERIAL</option>
+              <option value="JOB WORK">JOB WORK</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputSONO" class="col-sm-2 col-form-label">SO NO.<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="text" name="SONO" class="form-control" id="inputSONO" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputChallanNo" class="col-sm-2 col-form-label">CHALLAN NO.</label>
+          <div class="col-sm-10">
+            <input type="text" name="CHALLANNO" class="form-control" id="inputChallanNo">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputComments" class="col-sm-2 col-form-label">COMMENTS</label>
+          <div class="col-sm-10">
+            <input type="text" name="COMMENTS" class="form-control" id="inputComments">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputPartName" class="col-sm-2 col-form-label">PART NAME<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="text" name="PARTNAME" class="form-control" id="inputPartName" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputDrawingNo" class="col-sm-2 col-form-label">DRAWING NO<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="text" name="DRAWINGNO" class="form-control" id="inputDrawingNo" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputDrawingNo" class="col-sm-2 col-form-label">REVISION NO<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="text" name="REVISIONNO" class="form-control" id="inputDrawingNo" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputPoNo" class="col-sm-2 col-form-label">PO NO</label>
+          <div class="col-sm-10">
+            <input type="text" name="PONO" class="form-control" id="inputPoNo">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputExpTime" class="col-sm-2 col-form-label">EXPDATE<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="datetime-local" name="EXPTIME" class="form-control" id="inputExpTime" required>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <label for="inputExpTime" class="col-sm-2 col-form-label">ADD FILE<span class="text-danger">*</span></label>
+          <div class="col-sm-10">
+            <input type="file" name="FILE" class="form-control" id="inputExpTime">
+          </div>
+        </div>
+        <div class="text-left">
+          <button id="submitBtn" type="submit" class="btn btn-primary">Submit</button>
+          <button type="reset" class="btn btn-secondary">Reset</button>
+        </div>
+      </form><!-- End Horizontal Form -->
+        
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New Material Grade</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="newFieldForm" method="post" action="{% url 'savefield' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="newField" class="form-label">Enter new field:</label>
+                  <input name="field" type="text" class="form-control" id="newField" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+       
+
+
+    </div>
+  </div>
+
+  <script>
+   document.getElementById('newFieldForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const form = event.target;
+  const formData = new FormData(form);
+
+  fetch(form.action, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Add the new field to the dropdown
+      const newFieldOption = document.createElement('option');
+      newFieldOption.value = data.field;
+      newFieldOption.textContent = data.field;
+      document.getElementById('inputMaterialGrade').appendChild(newFieldOption);
+
+      // Select the new field in the dropdown
+      document.getElementById('inputMaterialGrade').value = data.field;
+
+      // Close the modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('staticBackdrop'));
+      modal.hide();
+    } else {
+      // Handle errors (e.g., field already exists)
+      alert(data.error || 'An error occurred while adding the new field.');
+    }
+  })
+  .catch(error => console.error('Error:', error));
+});
+
+  </script>
+
+</main>
+{% endblock %}

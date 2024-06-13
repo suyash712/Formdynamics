@@ -1,0 +1,218 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main">
+    <div class="col modal-header">
+        <h3> <span class="badge text-bg-primary">MATERIAL INFO  </span></h3>
+        <div class="" style="justify-content: end; display: flex; margin-left: 10px;">
+            <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN...">
+        </div>
+        <button type="button" class="btn btn-primary" style="margin-left: 600px;" id="openModalButton">ADD</button>
+
+        <!-- Modal -->
+        
+      </div>
+    <table class="table align-middle">
+        <thead>
+            <tr class="align-bottom">
+                <th scope="col">MATERIAL DESCRIPTION</th>
+                <th class="align-top" scope="col">DRAWING NO</th>
+                <th scope="col">MATERIAL GRADE</th>
+                <th scope="col">FINISH SIZE</th>
+                <th scope="col">RAW MATERIAL SIZE</th>
+                <th scope="col">ORDER SIZE</th>
+                <th scope="col">PDF</th>
+                <th scope="col">ACTIONS</th> <!-- New column for Edit button -->
+            </tr>
+        </thead>
+        <tbody id="employeeTable">
+            {% for material in materials %}
+            <tr class="align-bottom">
+                <th scope="row">{{ material.part_description }}</th>
+                <td>{{ material.DRAW_NO }}</td>
+                <td>{{ material.Material_Grade }}</td>
+                <td>{{ material.Finish_size }}</td>
+                <td>{{ material.Raw_material_size }}</td>
+                <td>{{ material.order_size }}</td>
+                <td>
+                    <a href="{% url 'serve_pdf' file_path=material.DRAWING_PDF.name %}" target="_blank">{{ material.DRAWING_PDF.name }}</a>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary edit-btn" data-toggle="modal" data-target="#editModal"
+                        data-material-id="{{ material.id }}">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'savematerial' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">PART DESCRIPTION</label>
+                            <input type="text" name="part_description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">DRAWING NO</label>
+                            <input type="text" min="1" name="DRAW_NO" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">MATERIAL GRADE</label>
+                            <input class="form-control" name="Material_Grade" type="text" id="exampleInputEmail1" required>    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">FINISH SIZE</label>
+                            <input type="text" name="Finish_size" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">RAW MATERIAL SIZE</label>
+                            <input type="text" min="1" name="Raw_material_size" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">ORDER SIZE</label>
+                            <input class="form-control" name="order_size" type="text" id="exampleInputEmail1" required>    
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">DRAWING PDF</label>
+                            <input class="form-control" name="DRAWING_PDF" type="file" id="formFile" required>    
+                        </div>
+                        <button class="btn btn-primary" type="submit">SUBMIT</button>    
+                    </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Material</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editMaterialForm" method="post" action="{% url 'editmaterial' %}">
+                        {% csrf_token %}
+                        <input type="hidden" id="editMaterialId" name="material_id">
+                        <div class="mb-3">
+                            <label for="editPartDescription" class="form-label">PART DESCRIPTION</label>
+                            <input type="text" name="part_description" class="form-control" id="editPartDescription">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDrawNo" class="form-label">DRAWING NO</label>
+                            <input type="text" name="DRAW_NO" class="form-control" id="editDrawNo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editMaterialGrade" class="form-label">MATERIAL GRADE</label>
+                            <input type="text" name="Material_Grade" class="form-control" id="editMaterialGrade">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editFinishSize" class="form-label">FINISH SIZE</label>
+                            <input type="text" name="Finish_size" class="form-control" id="editFinishSize">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRawMaterialSize" class="form-label">RAW MATERIAL SIZE</label>
+                            <input type="text" name="Raw_material_size" class="form-control" id="editRawMaterialSize">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editOrderSize" class="form-label">ORDER SIZE</label>
+                            <input type="text" name="order_size" class="form-control" id="editOrderSize">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDrawingPdf" class="form-label">DRAWING PDF</label>
+                            <input type="file" name="DRAWING_PDF" class="form-control" id="editDrawingPdf">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Handle click on Edit button
+        $('.edit-btn').click(function () {
+            var materialId = $(this).data('material-id');
+            var url = "{% url 'get_material' %}?id=" + materialId; // Replace with your URL to fetch material details
+    
+            // AJAX request to fetch material details
+            $.get(url, function (data) {
+                $('#editMaterialId').val(data.id);
+                $('#editPartDescription').val(data.part_description);
+                $('#editDrawNo').val(data.DRAW_NO);
+                $('#editMaterialGrade').val(data.Material_Grade);
+                $('#editFinishSize').val(data.Finish_size);
+                $('#editRawMaterialSize').val(data.Raw_material_size);
+                $('#editOrderSize').val(data.order_size);
+    
+                // You may want to handle displaying the PDF link here as well
+            });
+    
+            // Show the edit modal
+            $('#editModal').modal('show');
+        });
+    </script>
++    
+    <!-- Custom JS to trigger modal -->
+    <script>
+        document.getElementById('openModalButton').addEventListener('click', function() {
+            $('#myModal').modal('show');
+        });
+    </script>
+    <script>
+        function search() {
+            var input = document.getElementById('searchInput');
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById('employeeTable');
+            var tr = table.getElementsByTagName('tr');
+
+            for (var i = 0; i < tr.length; i++) {
+                var tdName = tr[i].getElementsByTagName('th')[0];
+                var tdDrawingNo = tr[i].getElementsByTagName('td')[0];
+                var tdRevisionNo = tr[i].getElementsByTagName('td')[1];
+                var tdPdf = tr[i].getElementsByTagName('td')[2];
+
+                if (tdName || tdDrawingNo || tdRevisionNo || tdPdf) {
+                    var txtValueName = tdName.textContent || tdName.innerText;
+                    var txtValueDrawingNo = tdDrawingNo.textContent || tdDrawingNo.innerText;
+                    var txtValueRevisionNo = tdRevisionNo.textContent || tdRevisionNo.innerText;
+                    var txtValuePdf = tdPdf.textContent || tdPdf.innerText;
+
+                    if (txtValueName.toUpperCase().indexOf(filter) > -1 ||
+                        txtValueDrawingNo.toUpperCase().indexOf(filter) > -1 ||
+                        txtValueRevisionNo.toUpperCase().indexOf(filter) > -1 ||
+                        txtValuePdf.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+    </script>
+
+</main>
+
+
+{% endblock %}

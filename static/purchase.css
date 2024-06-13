@@ -1,0 +1,39 @@
+.info-table{
+    height: 60px;
+    width: 100%;
+    
+    display: flex;
+    font-size:medium;
+    font-weight: bold;
+  }
+  .clm1{
+    height: 100%;
+    width: 20%;
+    text-align: center;
+    justify-content: center;
+    border:0.5px solid rgb(151, 169, 234) ;
+    
+  }
+  .clm2{
+    height: 100%;
+    width: 20%;
+    
+    text-align: center;
+    justify-content: center;
+    border:0.5px solid rgb(151, 169, 234) ;
+    
+  }
+  .title12{
+    height:30px;
+    width: 100%;
+    font-size: larger;
+    text-align: center;
+    font-weight: bolder;
+    
+    
+  }
+  .info-table:hover{
+    border: 1px solid rgb(16, 16, 62);
+    background-color: rgb(151, 169, 234);
+    color: rgb(16, 16, 62);
+  }

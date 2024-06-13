@@ -1,0 +1,186 @@
+{% extends 'home.html' %}
+{% block head %}
+<style>
+  
+</style> 
+{% endblock %}
+{% block body %}
+<main id="main" class="main">
+    <div class="row">
+        <div class="col">
+    <h3> <span class=" badge text-bg-warning">PRODUCTION ENTRY</span></h3></div>
+    <div class="col">
+        <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN..." style="margin-left: 10px;">
+    </div>
+    </div>
+    <table class="table " id="entryTable">
+        <thead>
+            <tr >
+                <th>GRN NO.</th>
+                <th>VENDOR NAME</th>
+                <th>EXP TIME</th>
+                <th>WORK DONE</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTable"  >
+            {% for entry in form_data %}
+            <tr class="clickable-row row1" data-href="{% url 'display_entry_details' entry.id %}">
+                <td>{{ entry.grn_entry.grnentry_GRNNO }}</td>
+                <td>{{ entry.vendor_name }}</td>
+                <td>{{ entry.exptime }}</td>
+                <td>{{ entry.order_status }} 
+                    {% if entry.order_status == "Completed" %}
+                    <button id="dispatchButton{{ entry.id }}" type="button" class="btn btn-primary btn-sm dispatch-button"
+                        data-entry-id="{{ entry.id }}"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem; margin-left: 100px;">
+                        DISPATCH
+                    </button>
+                    {% elif entry.order_status == "Pending"  %}
+                    <button type="button" class="btn btn-primary"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem; margin-left: 120px;" disabled>
+                        DISPATCH
+                    </button>
+                    {% else %}
+                    <button type="button" class="btn btn-primary"
+                        style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .75rem; margin-left: 110px;" disabled>
+                        DELIVERED
+                    </button>
+                    
+                    <span class="badge text-bg-primary rounded-pill">{{ form_data.dispatch_time  }}</span>
+
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- End Table with stripped rows -->
+
+</main>
+
+<!-- Modal -->
+{% for entry in form_data %}
+<div class="modal fade" id="deliveryModal{{ entry.id }}" tabindex="-1" aria-labelledby="deliveryModalLabel{{ entry.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryModalLabel{{ entry.id }}">Delivery Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Your delivery form goes here -->
+                <form id="deliveryForm{{ entry.id }}" method="post" class="row g-3" action="{% url 'dispatch_details' entry.id %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">SO ORDER</label>
+                        <input type="text" name="SOORDER" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">FINISHED JOB QTY</label>
+                        <input type="number" min="1" name="FINISHEDQTY" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">PDI REPORT</label>
+                        <input class="form-control" name="PDIREPORT" type="file" id="formFile" required>    
+                    </div>
+                    <div style="color: red;"><span style="color: red;">TOTAL NO OF QUANTITY TO DISPATCH:</span>{{entry.grn_entry.grnentry_NOQUANTITY}}</div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">TOTAL QUANTITY DISPATCHED</label>
+                        <input type="number" min="1" name="TTL_QNT_DISPATCH" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">INVOICEN NO./DELIVERY CHALLAN</label>
+                        <input type="text" name="INVOICENO" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">CUSTOMER NAME</label>
+                        <input type="text" name="CUSTOMERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">BUYER NAME</label>
+                        <input type="text" name="BUYERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">SALES REPRESENTATIVE</label>
+                        <input type="text" name="SALESREPRESENT" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">PART COST</label>
+                        <input type="number" name="PARTCOST" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!-- End Modal -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Your JavaScript code for triggering modals and form population goes here
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Handle clicking on the row
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+
+    // Handle clicking on the button within the row
+    $(".dispatch-button").click(function(event) {
+        event.stopPropagation(); // Prevent the row click event from triggering
+        var entryId = $(this).data("entry-id");
+        $("#deliveryModal" + entryId).modal("show"); // Open the modal associated with the button
+    });
+
+    // Disable dispatch button after form submission
+    $("form").submit(function() {
+        var entryId = $(this).attr("id").replace("deliveryForm", "");
+        $("#dispatchButton" + entryId).prop("disabled", true).text("Delivered");
+    });
+});
+</script>
+
+<script>
+    function search() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("entryTable");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        // Get all cells (td elements) in the current row
+        td = tr[i].getElementsByTagName("td");
+        let found = false;
+        // Loop through all cells in the current row and check if any match the search query
+        for (var j = 0; j < td.length; j++) {
+            txtValue = td[j].textContent || td[j].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                found = true;
+                break;  // Break the inner loop if a match is found in any cell
+            }
+        }
+        if (found) {
+            tr[i].style.display = "";  // Show the row if a match was found
+        } else {
+            tr[i].style.display = "none";  // Hide the row if no match was found
+        }
+    }
+}
+</script>
+
+
+
+
+
+
+{% endblock %}

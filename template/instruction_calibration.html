@@ -1,0 +1,242 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main">
+    <div class="col modal-header" >
+        <h3><span class="badge text-bg-primary">INSTRUCTION CALIBRATION</span></h3>
+        <input type="text" id="searchInput" onkeyup="search()" placeholder="Search for Vendor or GRN..." style="margin-left: 10px;">
+        <button type="button" class="btn btn-primary" style="margin-left: 600px;" id="openModalButton" >ADD</button>
+    </div>
+    <table class="table align-middle">
+        <!-- Table headers -->
+        <thead>
+            <!-- Header row -->
+            <tr class="align-bottom">
+                <th scope="col">INST NAME</th>
+                <th class="align-top" scope="col">MAKE</th>
+                <th scope="col">LEAST COUNT</th>
+                <th scope="col">RANGE</th>
+                <th scope="col">LOCATION</th>
+                <th scope="col">CALIBRATED DATE</th>
+                <th scope="col">NEXT CALIBRATION DATE</th>
+                <th scope="col">REMARK</th>
+                <th scope="col">ACTIONS</th>
+            </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody id="employeeTable">
+            <!-- Loop through calibration data -->
+            {% for material in cal %}
+            <tr class="align-bottom">
+                <!-- Display each field -->
+                <th scope="row">{{ material.inst_name }}</th>
+                <td>{{ material.make }}</td>
+                <td>{{ material.least_count }} {{ material.least_count_unit }}</td>
+                <td>{{ material.least_range }} - {{ material.max_range }} {{ material.range_unit }}</td>
+                <td>{{ material.location }}</td>
+                <td>{{ material.calibrated_date }}</td>
+                <td>{{ material.next_calibration_due_date }}</td>
+                <td>{{ material.remark }}</td>
+                <!-- Edit button with data attributes -->
+                <td>
+                    <button type="button" class="btn btn-primary editButton"
+                            data-id="{{ material.id }}"
+                            data-inst_name="{{ material.inst_name }}"
+                            data-make="{{ material.make }}"
+                            data-least_count="{{ material.least_count }}"
+                            data-least_count_unit="{{ material.least_count_unit }}"
+                            data-least_range="{{ material.least_range }}"
+                            data-max_range="{{ material.max_range }}"
+                            data-range_unit="{{ material.range_unit }}"
+                            data-location="{{ material.location }}"
+                            data-calibrated_date="{{ material.calibrated_date }}"
+                            data-next_calibration_due_date="{{ material.next_calibration_due_date }}"
+                            data-remark="{{ material.remark }}">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Modal for editing -->
+    <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <!-- Modal dialog -->
+        <div class="modal-dialog">
+            <div class="modal-content" style="height: auto; width: 800px;">
+                <!-- Modal header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">CALIBRATION INSTRUCTION DETAILS</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <!-- Form for updating -->
+                    <form method="post" id="calibrationForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="inst_name" class="form-label" style="font-weight: bold;">INST NAME</label>
+                            <input type="text" name="inst_name" class="form-control" id="inst_name">    
+                        </div>
+                        <div class="mb-3">
+                            <label for="make" class="form-label" style="font-weight: bold;">MAKE<span class="text-danger">*</span></label>
+                            <select class="form-select" aria-label="Default select example" name="make" id="make">
+                                <option selected>Open this select menu</option>
+                                <option value="mithutoyo">mithutoyo</option>
+                                <option value="insize">insize</option>
+                                <option value="bakers">bakers</option>
+                                <option value="ensons">ensons</option>
+                                <option value="aerospace">aerospace</option>    
+                                <option value="workzone">workzone</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="least_count" class="form-label" style="font-weight: bold;">LEAST COUNT</label>
+                            <div class="row">
+                                <div class="col">  
+                                    <input class="form-control" name="least_count" type="text" id="least_count" required>  
+                                </div>
+                                <div class="col">
+                                    <select class="form-select" aria-label="Default select example" name="least_count_unit" id="least_count_unit">
+                                        <option selected>Open this select menu</option>
+                                        <option value="mm">mm</option>
+                                        <option value="cm">cm</option>
+                                        <option value="m">m</option>
+                                        <option value="km">km</option>
+                                        <option value="in">in</option>
+                                        <option value="ft">ft</option>
+                                        <option value="yd">yd</option>
+                                        <option value="mi">mi</option>
+                                    </select> 
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="mb-3">
+                            <label for="range" class="form-label" style="font-weight: bold;">RANGE</label>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="integer" min="0" name="least_range" class="form-control" id="least_range" aria-describedby="emailHelp"> 
+                                </div> 
+                                <div class="" style="height: 37.6;width: 40px; text-align: center; justify-content: center;" ><span style="font-weight: bold;">TO</span></div>
+                                <div class="col"> 
+                                    <input type="integer" min="0" name="max_range" class="form-control" id="max_range" aria-describedby="emailHelp"> 
+                                </div> 
+                                <div class="col">
+                                    <select class="form-select" aria-label="Default select example" name="range_unit" id="range_unit">
+                                        <option selected>Open this select menu</option>
+                                        <option value="mm">mm</option>
+                                        <option value="cm">cm</option>
+                                        <option value="m">m</option>
+                                        <option value="km">km</option>
+                                        <option value="in">in</option>
+                                        <option value="ft">ft</option>
+                                        <option value="yd">yd</option>
+                                        <option value="mi">mi</option>
+                                    </select> 
+                                </div>
+                            </div>   
+                        </div>
+                        <div class="mb-3">
+                            <label for="location" class="form-label" style="font-weight: bold;">LOCATION</label>
+                            <input class="form-control" name="location" type="text" id="location" required>    
+                        </div>
+                        <div class="mb-3">
+                            <label for="calibrated_date" class="form-label" style="font-weight: bold;" >CALIBRATED DATE</label>
+                            <input class="form-control" name="calibrated_date" type="datetime-local" id="calibrated_date" required>    
+                        </div>
+                        <div class="mb-3">
+                            <label for="next_calibration_due_date" class="form-label" style="font-weight: bold;">NEXT CALIBRATION DATE</label>
+                            <input class="form-control" name="next_calibration_due_date" type="datetime-local" id="next_calibration_due_date" required>    
+                        </div>
+                        <div class="mb-3">
+                            <label for="remark" class="form-label" style="font-weight: bold;">REMARK</label>
+                            <input class="form-control" name="remark" type="text" id="remark" required>    
+                        </div>
+                        <button class="btn btn-primary" type="submit">SUBMIT</button>  
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap and Custom JS scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Your JavaScript code for triggering modals and form population goes here
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('calibrationForm');
+        const modal = new bootstrap.Modal(document.getElementById('myModal'));
+
+        document.getElementById('openModalButton').addEventListener('click', function () {
+            form.reset();
+            form.action = "{% url 'cal' %}";
+            modal.show();
+        });
+
+        document.querySelectorAll('.editButton').forEach(button => {
+            button.addEventListener('click', function () {
+                const materialId = this.getAttribute('data-id');
+                form.action = "{% url 'update_cal' 0 %}".replace('0', materialId);
+                form.querySelector('[name="inst_name"]').value = this.getAttribute('data-inst_name');
+                form.querySelector('[name="make"]').value = this.getAttribute('data-make');
+                form.querySelector('[name="least_count"]').value = this.getAttribute('data-least_count');
+                form.querySelector('[name="least_count_unit"]').value = this.getAttribute('data-least_count_unit');
+                form.querySelector('[name="least_range"]').value = this.getAttribute('data-least_range');
+                form.querySelector('[name="max_range"]').value = this.getAttribute('data-max_range');
+                form.querySelector('[name="range_unit"]').value = this.getAttribute('data-range_unit');
+                form.querySelector('[name="location"]').value = this.getAttribute('data-location');
+                form.querySelector('[name="calibrated_date"]').value = this.getAttribute('data-calibrated_date');
+                form.querySelector('[name="next_calibration_due_date"]').value = this.getAttribute('data-next_calibration_due_date');
+                form.querySelector('[name="remark"]').value = this.getAttribute('data-remark');
+                modal.show();
+            });
+        });
+    });
+</script>
+<script>
+    function search() {
+        // Get the value from the search input
+        var input = document.getElementById('searchInput');
+        var filter = input.value.toUpperCase();
+        // Get the table and its rows
+        var table = document.getElementById('employeeTable');
+        var tr = table.getElementsByTagName('tr');
+
+        // Loop through all table rows and hide those that don't match the search query
+        for (var i = 0; i < tr.length; i++) {
+            var tdName = tr[i].getElementsByTagName('th')[0];
+            var tdDesignation = tr[i].getElementsByTagName('td')[0];
+            var tdAadhar = tr[i].getElementsByTagName('td')[1];
+            var tdMobile = tr[i].getElementsByTagName('td')[2];
+
+            if (tdName || tdDesignation || tdAadhar || tdMobile) {
+                var txtValueName = tdName.textContent || tdName.innerText;
+                var txtValueDesignation = tdDesignation.textContent || tdDesignation.innerText;
+                var txtValueAadhar = tdAadhar.textContent || tdAadhar.innerText;
+                var txtValueMobile = tdMobile.textContent || tdMobile.innerText;
+
+                if (txtValueName.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueDesignation.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueAadhar.toUpperCase().indexOf(filter) > -1 ||
+                    txtValueMobile.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = '';
+                } else {
+                    tr[i].style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
+
+
+
+{% endblock %}
+

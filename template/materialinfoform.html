@@ -1,0 +1,21 @@
+{% extends 'home.html' %}
+{% block body %}
+
+<main id="main" class="main">
+   <form action="">
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">SO ORDER</label>
+        <input type="text" name="SOORDER" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">FINISHED JOB QTY</label>
+        <input type="number" min="1" name="FINISHEDQTY" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+    </div>
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">PDI REPORT</label>
+        <input class="form-control" name="PDIREPORT" type="file" id="formFile" required>    
+    </div>
+   </form>
+
+</main>
+{% endblock %}

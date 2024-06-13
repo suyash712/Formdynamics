@@ -1,0 +1,100 @@
+{% extends 'home.html' %}
+{% block body %}
+<main id="main" class="main" >
+  <div style="height: 500px; width: 800px; background-color: white; padding: 10px;"  >
+    <h1  >form</h1>
+    <form id="form" style="margin-top: 20px;" class="row g-3 " method="post" action="{% url 'form_view' %}" >
+      {% csrf_token %}
+      <div class="col-md-6" >
+        <label for="inputEmail4" class="form-label">GRNNO<span class="text-danger">*</span></label>
+        <input type="text" name="GRNNO" class="form-control" id="inputEmail4" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputPassword4" class="form-label">Vendor name<span class="text-danger">*</span></label>
+        <input type="text" name="vendor_name" class="form-control" id="inputPassword4" required>
+      </div>
+      <div class="col-md-6">
+        <label for="inputCity" class="form-label">EXPECTED TIME<span class="text-danger">*</span></label>
+        <input type="datetime-local" name="exptime" class="form-control" id="inputCity" required>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" name="quantitycheck" value="1" type="checkbox" id="flexCheckDefault" required>
+        <label class="form-check-label"  for="flexCheckDefault" >
+          Quantity checked or not<span class="text-danger">*</span>
+        </label>
+      </div>
+      <div class="mb-3">
+        <label for="formFile"  class="form-label">IMAGE<span class="text-danger">*</span></label>
+        <input class="form-control" name="image" type="file" id="formFile" required>
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label">Reports<span class="text-danger">*</span></label>
+        <textarea class="form-control" name="report" id="exampleFormControlTextarea1" rows="3" required></textarea>
+      </div>
+      <span style="margin-bottom: 10px;">PROCESS DETAILS<span class="text-danger">*</span>:</span>
+      <div class="container" style="margin-bottom: 10px;">
+        <button type="button" onclick="addField()" class="btn btn-primary">Add Field</button>  
+      </div>
+      <div class="label" style="display:flex; gap: 38px; margin-left: 20px; margin-bottom: 10px;">
+        <div>PROCESS<span class="text-danger">*</span></div>
+        <div>DESCRIPTION<span class="text-danger">*</span></div>
+        <div>START DATE<span class="text-danger">*</span></div>
+        <div>END DATE<span class="text-danger">*</span></div>
+        <div>QUANTITY<span class="text-danger">*</span></div>
+      </div>
+      <div class="container" style="display: flex;gap: 5px;  ">
+        <input type="text" name="inputField[]" placeholder="process details" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input type="text" name="inputField[]" placeholder="description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input type="datetime-local" name="inputField[]" placeholder="start date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"required>
+        <input type="datetime-local" name="inputField[]" placeholder="end date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input type="number" min="0" name="inputField[]" placeholder="quantity" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <button type="button" onclick="removeField(this)" class="btn btn-primary">Remove</button>
+      </div>
+      <!-- New input field container to be added -->
+      
+      <!-- End of new input field container -->
+      
+      <div class="container1" style="display: flex;gap: 5px;  ">
+
+        
+        <input type="text" name="inputField[]" placeholder="process details" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input type="text" name="inputField[]" placeholder="description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input type="datetime-local" name="inputField[]" placeholder="start date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"required>
+        <input type="datetime-local" name="inputField[]" placeholder="end date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input type="number" name="inputField[]" min="0" placeholder="quantity" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <input class="form-control" type="file" id="formFileMultiple" multiple required>
+        
+      </div>
+      <button type="submit" class="btn btn-primary suyash">Submit</button>
+    </form>
+  </div>
+  <script>
+    function addField() {
+      var form = document.getElementById('form');
+      var container = document.createElement('div');
+      container.className = 'form';
+      container.innerHTML = `
+        <div class="container2" style="display: flex;gap: 5px;  ">
+          <input type="text" name="inputField[]" placeholder="process details" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+          <input type="text" name="inputField[]" placeholder="description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+          <input type="datetime-local" name="inputField[]" placeholder="start date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"required>
+          <input type="datetime-local" name="inputField[]" placeholder="end date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+          <input type="integer" min='0' name="inputField[]" placeholder="quantity" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+          <button type="button" onclick="removeField(this)" class="btn btn-primary">Remove</button>
+        </div>
+      `;
+      form.insertBefore(container, form.querySelector('.container1')); // Insert the new field container before the second container
+    }
+
+    function removeField(button) {
+      var container = button.parentNode;
+      container.parentNode.removeChild(container);
+    }
+  </script>
+  <script>
+    function confirmSubmit() {
+        return confirm("Are you sure you want to submit this form?");
+    }
+</script>
+</main>
+{% endblock %}

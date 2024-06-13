@@ -1,0 +1,335 @@
+{% extends 'home.html' %}
+{% block head %}
+<!-- Add any necessary CSS or JavaScript imports here -->
+<style>
+    /* CSS for hover effect */
+    .row1:hover {
+        background-color: blue !important; /* Change background color to blue on hover */
+        color: white !important; /* Change font color to white on hover */
+    }
+</style>
+{% endblock %}
+{% block body %}
+<main id="main" class="main">
+    <h3> <span class=" badge text-bg-warning">GRN ENTRY</span></h3> 
+    <table class="table" id="entryTable">
+        <thead>
+            <tr>
+                <th>GRN NO.</th>
+                <th>STORE OWNER</th>
+                <th>PARTNAME</th>
+                <th>NO OF QUANTITY</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in grn %}
+            <tr class="clickable-row row1" style=""> 
+                <td>{{ entry.grnentry_GRNNO }}</td>
+                <td>{{ entry.grnentry_STOREOWNER }}</td>
+                <td>{{ entry.grnentry_DATETIME }}</td>
+                <td>{{ entry.grnentry_NOQUANTITY }}
+                {% if entry.status == 'Pending' %}
+                <td>
+                    
+                    <button type="button" class="btn btn-primary tracking-entry-btn" data-target="#trackingModal{{ entry.id }}">TRACKING ENTRY</button>
+                    
+                </td>
+                
+                {% elif entry.status == 'Completed' %}
+                
+                <td>
+                    <button type="button" class="btn btn-primary dispatch-entry-btn" data-grn="{{ entry.grnentry_GRNNO }}" data-toggle="modal" data-target="#deliveryModal">DISPATCH</button>
+
+
+
+                </td>
+                {% else %}
+                 <td>
+                    <button  type="button" class="btn btn-primary" disabled> DELIVERED</button>
+                 </td>
+
+                </td>
+                {% endif %}
+                <td>
+                    
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Info
+                </button></td>
+            </tr>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">GRN ENTRY INFO:</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <strong>GRN NO. : {{ entry.grnentry_GRNNO }}</strong> <br>
+                            <strong>MATERIAL DESCRIPTION : {{ entry.grnentry_MATERIALDESCRIPTION }}</strong><br>
+                            <strong>MATERIAL GRADE: {{ entry.grnentry_MATERIALGRADE }}</strong> <br>
+                            <strong>QUANTITY : {{ entry.grnentry_NOQUANTITY}} {{ i.grnentry_QUANTITYTYPE }}</strong> <br>
+                            <strong>DATE AND TIME : {{ entry.grnentry_DATETIME }}</strong><br>
+                            <strong>STORE OWNER : {{ entry.grnentry_STOREOWNER }}</strong> <br>
+                            <strong>ORDER TYPE : {{ entry.grnentry_ORDERTYPE }}</strong><br>
+                            <strong>CUSTOMER CODE: {{ entry.grnentry_CUSTOMERCODE }}</strong><br>
+                            <strong>PO NO. : {{ entry.grnentry_PONO }}</strong><br>
+                            <strong>CHALLAN NO :{{ entry.grnentry_CHALLANNO }}</strong> <br>
+                            <strong>COMMENTS : {{ entry.grnentry_COMMENTS }}</strong> <br>
+                            <strong>SALESORDER NO : {{ entry.grnentry_SONO }}</strong> <br>
+                            <strong>PART NAME : {{ entry.grnentry_PARTNAME }}</strong> <br>
+                            <strong>DRAWING NO : {{ entry.grnentry_DRAWINGNO }}</strong> <br>
+                            <strong>EXPECTED TIME : {{ entry.grnentry_EXPTIME }}</strong> <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <!-- Additional buttons if needed -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</main>
+{% for entry in grn %}
+<!-- Bootstrap modal -->
+<div class="modal fade" id="trackingModal{{ entry.id }}" tabindex="-1" role="dialog" aria-labelledby="trackingModalLabel{{ entry.id }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="height: auto; width: 800px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="trackingModalLabel">Tracking Entry</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="form" style="margin-top: 20px;" class="row g-3" method="post" action="{% url 'form_view1' entry.id %}" onsubmit="return confirmSubmit()">
+   
+                    
+                    
+                    <!-- Your form fields here -->
+               
+                    {% csrf_token %}
+                    
+                    <div class="col-md-6">
+                      <label for="inputPassword4" class="form-label">Vendor name<span class="text-danger">*</span></label>
+                      <input type="text" name="vendor_name" class="form-control" id="inputPassword4" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="inputCity" class="form-label">EXPECTED TIME<span class="text-danger">*</span></label>
+                      <input type="datetime-local" name="exptime" class="form-control" id="inputCity" required>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" name="quantitycheck" value="1" type="checkbox" id="flexCheckDefault" required>
+                      <label class="form-check-label"  for="flexCheckDefault" >
+                        Quantity checked or not<span class="text-danger">*</span>
+                      </label>
+                    </div>
+                    <div class="mb-3">
+                      <label for="formFile"  class="form-label">IMAGE<span class="text-danger">*</span></label>
+                      <input class="form-control" name="image" type="file" id="formFile" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="exampleFormControlTextarea1" class="form-label">Reports<span class="text-danger">*</span></label>
+                      <textarea class="form-control" name="report" id="exampleFormControlTextarea1" rows="3" required></textarea>
+                    </div>
+                    <span style="margin-bottom: 10px;">PROCESS DETAILS<span class="text-danger">*</span>:</span>
+                    <div class="container" style="margin-bottom: 10px;">
+                      <button type="button" onclick="addField()" class="btn btn-primary">Add Field</button>  
+                    </div>
+                    <div class="label" style="display:flex; gap: 38px; margin-left: 20px; margin-bottom: 10px;">
+                      <div>PROCESS<span class="text-danger">*</span></div>
+                      <div>DESCRIPTION<span class="text-danger">*</span></div>
+                      <div>START DATE<span class="text-danger">*</span></div>
+                      <div>END DATE<span class="text-danger">*</span></div>
+                      <div>QUANTITY<span class="text-danger">*</span></div>
+                    </div>
+                    <div class="container" style="display: flex;gap: 5px;  ">
+                      <input type="text" name="inputField[]" placeholder="process details" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input type="text" name="inputField[]" placeholder="description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input type="datetime-local" name="inputField[]" placeholder="start date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"required>
+                      <input type="datetime-local" name="inputField[]" placeholder="end date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input type="number" min="0" name="inputField[]" placeholder="quantity" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <button type="button" onclick="removeField(this)" class="btn btn-primary">Remove</button>
+                    </div>
+                    <!-- New input field container to be added -->
+                    
+                    <!-- End of new input field container -->
+                    
+                    <div class="container1" style="display: flex;gap: 5px;  ">
+              
+                      
+                      <input type="text" name="inputField[]" placeholder="process details" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input type="text" name="inputField[]" placeholder="description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input type="datetime-local" name="inputField[]" placeholder="start date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"required>
+                      <input type="datetime-local" name="inputField[]" placeholder="end date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input type="number" name="inputField[]" min="0" placeholder="quantity" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                      <input class="form-control" type="file" id="formFileMultiple" multiple required>
+                      
+                    </div>
+                    <button type="submit" class="btn btn-primary suyash">Submit</button>
+                    
+                  </form>
+                  <script>
+                    function addField() {
+                      var form = document.getElementById('form');
+                      var container = document.createElement('div');
+                      container.className = 'form';
+                      container.innerHTML = `
+                        <div class="container2" style="display: flex;gap: 5px;  ">
+                          <input type="text" name="inputField[]" placeholder="process details" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                          <input type="text" name="inputField[]" placeholder="description" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                          <input type="datetime-local" name="inputField[]" placeholder="start date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"required>
+                          <input type="datetime-local" name="inputField[]" placeholder="end date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                          <input type="integer" min='0' name="inputField[]" placeholder="quantity" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+                          <button type="button" onclick="removeField(this)" class="btn btn-primary">Remove</button>
+                        </div>
+                      `;
+                      form.insertBefore(container, form.querySelector('.container1')); // Insert the new field container before the second container
+                    }
+                
+                    function removeField(button) {
+                      var container = button.parentNode;
+                      container.parentNode.removeChild(container);
+                    }
+                  </script>
+                  <script>
+                    function confirmSubmit() {
+                        return confirm("Are you sure you want to submit this form?");
+                    }
+                </script>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div class="modal fade" id="deliveryModal" tabindex="-1" role="dialog" aria-labelledby="deliveryModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryModalLabel">DISPATCH ENTRY</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="deliveryForm" method="post" class="row g-3" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">SO ORDER</label>
+                    <input type="text" name="SOORDER" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">FINISHED JOB QTY</label>
+                    <input type="number" min="1" name="FINISHEDQTY" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">PDI REPORT</label>
+                    <input class="form-control" name="PDIREPORT" type="file" id="formFile" required>    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">TOTAL QUANTITY DISPATCHED</label>
+                    <input type="number" min="1" name="TTL_QNT_DISPATCH" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">INVOICEN NO./DELIVERY CHALLAN</label>
+                    <input type="text" name="INVOICENO" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">CUSTOMER NAME</label>
+                    <input type="text" name="CUSTOMERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">BUYER NAME</label>
+                    <input type="text" name="BUYERNAME" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">SALES REPRESENTATIVE</label>
+                    <input type="text" name="SALESREPRESENT" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">PART COST</label>
+                    <input type="number" name="PARTCOST" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">    
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+</div>
+
+  
+
+
+
+
+
+
+
+
+
+
+<script>
+    // JavaScript to handle button click event and show modal
+    document.addEventListener("DOMContentLoaded", function () {
+        var trackingEntryBtns = document.querySelectorAll(".tracking-entry-btn");
+        trackingEntryBtns.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                console.log("suyasah")
+                // Get the ID of the modal associated with the button
+                var modalId = this.dataset.target;
+                // Show the modal with the corresponding ID
+                $(modalId).modal('show');
+            });
+        });
+
+
+        
+
+
+        // Close modal when close button is clicked
+        var closeModalBtn = document.querySelector(".modal-footer button[data-dismiss='modal']");
+        closeModalBtn.addEventListener("click", function () {
+            $(this.closest('.modal')).modal('hide');
+        });
+    });
+
+   
+</script>
+<script>
+// JavaScript to handle button click event and show modal
+document.addEventListener("DOMContentLoaded", function () {
+    var dispatchEntryBtns = document.querySelectorAll(".dispatch-entry-btn");
+    var deliveryModal = document.getElementById('deliveryModal');
+    var grnInput = document.getElementById('grnInput');
+
+    dispatchEntryBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            var grn = this.dataset.grn;
+            grnInput.value = grn;
+            $(deliveryModal).modal('show');
+        });
+    });
+
+    // Close modal when close button is clicked
+    var closeModalBtn = document.querySelector("#deliveryModal .modal-footer button[data-dismiss='modal']");
+    closeModalBtn.addEventListener("click", function () {
+        $(deliveryModal).modal('hide');
+    });
+});
+</script>   
+
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0-alpha1/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}
