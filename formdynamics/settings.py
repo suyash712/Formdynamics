@@ -41,7 +41,12 @@ INSTALLED_APPS = [
     'salesorder',
     'apiitems',
     'purchaseorders',
-    'trials'
+    'trials',
+     'django_cron',
+]
+
+CRON_CLASSES = [
+    'myapp.cron.MyCronJob',
 ]
 
 MIDDLEWARE = [

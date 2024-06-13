@@ -1,0 +1,13 @@
+{% for notification in notifications %}
+<li class="notification-item">
+    <i class="bi bi-exclamation-circle text-warning"></i>
+    <div>
+        <h4>{{ notification.calibration.inst_name }}</h4>
+        <p>{{ notification.message }}</p>
+        <p>{{ notification.created_at }}</p>
+    </div>
+</li>
+<li>
+    <hr class="dropdown-divider">
+</li>
+{% endfor %}

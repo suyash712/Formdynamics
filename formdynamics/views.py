@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404 
 from django.http import HttpResponse
-from grnentry.models import Grnentry1,FormData, ProcessDetails,Delivery,Inventory,fields,material,Employee_info,calibration,master_component,Outsourse
+from grnentry.models import Grnentry1,FormData, ProcessDetails,Delivery,Inventory,fields,material,Employee_info,calibration,master_component,Outsourse,Notification
 import requests
 from django.http import JsonResponse
 from .forms import FormDataForm
@@ -545,16 +545,15 @@ def calculate_remaining_units():
         inventory.remaining_quantity = remaining_units
         inventory.save()
 
-from django.db.models import Sum, Q
-
-from django.db.models import Sum, Q
+from django.db.models import Sum
 
 def inventory_view(request):
     # Query all FormData objects
     form_data_list = FormData.objects.all().order_by('-dispatch_time')
 
-    # Initialize a dictionary to store merged inventory data
-    inventory_data = {}
+    # Initialize dictionaries to store inventory data
+    pending_inventory_data = {}
+    completed_inventory_data = {}
 
     # Iterate through each FormData object
     for form_data in form_data_list:
@@ -584,30 +583,70 @@ def inventory_view(request):
         # Retrieve the part costs from the associated Delivery objects
         part_costs = form_data.delivery_set.values_list('PARTCOST', flat=True)
 
-        # Update the inventory data dictionary
-        if key in inventory_data:
-            inventory_data[key]['remaining_quantity'] += remaining_units
-            inventory_data[key]['rejected_quantity'] += rejected_quantity
-            inventory_data[key]['part_costs'].extend(part_costs)
+        if form_data.order_status == 'Pending':
+            # Update the pending inventory data dictionary
+            if key in pending_inventory_data:
+                pending_inventory_data[key]['remaining_quantity'] += remaining_units
+                pending_inventory_data[key]['rejected_quantity'] += rejected_quantity
+                pending_inventory_data[key]['part_costs'].extend(part_costs)
+            else:
+                pending_inventory_data[key] = {
+                    'part_name': part_name,
+                    'drawing_no': drawing_no,
+                    'material_grade': material_grade,
+                    'remaining_quantity': remaining_units,
+                    'rejected_quantity': rejected_quantity,
+                    'part_costs': list(part_costs),
+                    'order_status': form_data.order_status
+                }
         else:
-            inventory_data[key] = {
-                'part_name': part_name,
-                'drawing_no': drawing_no,
-                'material_grade': material_grade,
-                'remaining_quantity': remaining_units,
-                'rejected_quantity': rejected_quantity,
-                'part_costs': list(part_costs)
-            }
+            # Update the completed inventory data dictionary
+            if key in completed_inventory_data:
+                completed_inventory_data[key]['remaining_quantity'] += remaining_units
+                completed_inventory_data[key]['rejected_quantity'] += rejected_quantity
+                completed_inventory_data[key]['part_costs'].extend(part_costs)
+            else:
+                completed_inventory_data[key] = {
+                    'part_name': part_name,
+                    'drawing_no': drawing_no,
+                    'material_grade': material_grade,
+                    'remaining_quantity': remaining_units,
+                    'rejected_quantity': rejected_quantity,
+                    'part_costs': list(part_costs),
+                    'order_status': form_data.order_status
+                }
 
     # Format the part costs as comma-separated values
-    for key in inventory_data:
-        inventory_data[key]['part_costs'] = ', '.join(map(str, set(inventory_data[key]['part_costs'])))
+    for key in pending_inventory_data:
+        pending_inventory_data[key]['part_costs'] = ', '.join(map(str, set(pending_inventory_data[key]['part_costs'])))
+    for key in completed_inventory_data:
+        completed_inventory_data[key]['part_costs'] = ', '.join(map(str, set(completed_inventory_data[key]['part_costs'])))
 
     # Render the inventory template with the merged inventory data
-    return render(request, 'inventory.html', {'inventory_list': inventory_data.values()})
+    return render(request, 'inventory.html', {
+        'pending_inventory_list': pending_inventory_data.values(),
+        'completed_inventory_list': completed_inventory_data.values()
+    })
 
 def dashboard(request):
     return render(request,'dashboard.html')
+
+
+from django.utils import timezone
+from datetime import timedelta
+
+def generate_notifications():
+    now = timezone.now()
+    due_date = now + timedelta(days=2)
+    calibrations_due_soon = calibration.objects.filter(next_calibration_due_date__lte=due_date, next_calibration_due_date__gt=now)
+
+    for calibration in calibrations_due_soon:
+        message = f"Calibration due for {calibration.inst_name} on {calibration.next_calibration_due_date.strftime('%Y-%m-%d')}"
+        Notification.objects.create(message=message, calibration=calibration)
+
+def get_notifications(request):
+    notifications = Notification.objects.filter(is_read=False).order_by('-created_at')
+    return render(request, 'notifications.html', {'notifications': notifications})        
 
 '''
 def apicall_items(request):

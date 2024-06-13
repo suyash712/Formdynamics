@@ -1,23 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>Charts / ApexCharts - NiceAdmin Bootstrap Template</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-
-  <!-- Favicons -->
   <link href="/static/assets/img/favicon.png" rel="icon">
   <link href="/static/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
   <link href="static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="static/assets/vendor/boxicons/css/boxicons.min.css" rel="style">
@@ -25,8 +17,6 @@
   <link href="static/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
   <link href="static/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
   <link href="static/assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
   <link href="static/assets/css/style.css" rel="stylesheet">
   <link rel="stylesheet" href="static/script.js">
   <style>
@@ -38,12 +28,10 @@
       border: none;
       cursor: pointer;
     }
-    
     .dropdown {
       position: relative;
       display: inline-block;
     }
-    
     .dropdown-content {
       display: none;
       position: absolute;
@@ -52,84 +40,69 @@
       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
       z-index: 1;
     }
-    
     .dropdown-content a {
       color: black;
       padding: 12px 16px;
       text-decoration: none;
       display: block;
     }
-    
     .dropdown-content a:hover {background-color: #f1f1f1}
-    
     .dropdown:hover .dropdown-content {
       display: block;
     }
-    
     .dropdown:hover .dropbtn {
       background-color: #3e8e41;
     }
-    </style>
-
-{% block head %}{% endblock %}
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Updated: Nov 17 2023 with Bootstrap v5.3.2
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+  </style>
+  {% block head %}{% endblock %}
 </head>
-
 <body>
  {% load static %}
-  <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
-
     <div class="d-flex align-items-center justify-content-between">
       <a href="index.html" class="logo d-flex align-items-center">
         <img src="assets/img/logo.png" alt="">
         <span class="d-none d-lg-block" title="our company">FORM DYNAMICS</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div><!-- End Logo -->
-
+    </div>
     <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
+      <form id="search-form" class="search-form d-flex align-items-center" method="POST" action="#">
+        <input id="search-input" type="text" name="query" placeholder="Search" title="Enter search keyword">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
-    </div><!-- End Search Bar -->
-
+    </div>
     <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
-
         <li class="nav-item d-block d-lg-none">
           <a class="nav-link nav-icon search-bar-toggle " href="#">
             <i class="bi bi-search"></i>
           </a>
-        </li><!-- End Search Icon-->
-
-        
-        <!-- End Profile Nav -->
-
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number" id="notification-count">0</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" id="notifications">
+            <li class="dropdown-header">
+              You have <span id="notification-count-text">0</span> new notifications
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+          </ul>
+        </li>
       </ul>
-       <!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
+    </nav>
+  </header>
   <aside id="sidebar" class="sidebar">
-
     <ul class="sidebar-nav" id="sidebar-nav">
-
       <li class="nav-item">
         <a class="nav-link collapsed" href="http://127.0.0.1:8000">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
-      </li><!-- End Dashboard Nav -->
-
+      </li>
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-menu-button-wide"></i><span>ENTRY</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -137,22 +110,15 @@
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="http://127.0.0.1:8000/grnentry">
-              <i class="bi bi-bookmark-plus-fill"></i></i><span>GRN ENTRY</span>
+              <i class="bi bi-bookmark-plus-fill"></i><span>GRN ENTRY</span>
             </a>
           </li>
-          
         </ul>
       </li>
-      <!-- End Components Nav -->
-      
-
       <li class="nav-heading"></li>
-
-      <!-- End Profile Page Nav -->
-
       <li class="nav-item">
         <a class="nav-link collapsed" href="http://127.0.0.1:8000/grnmainpage">
-          <i class="bi bi-question-circle"></i>
+          <i class="bi bi-list-ol"></i>
           <span>LIST GRNENTRY</span>
         </a>
       </li>
@@ -161,73 +127,60 @@
           <i class="bi bi-question-circle"></i>
           <span>MATERIAL INFO</span>
         </a>
-      </li><!-- End F.A.Q Page Nav -->
+      </li>
       <li class="nav-item">
         <a class="nav-link collapsed" href="http://127.0.0.1:8000/salesorder1">
           <i class="bi bi-receipt-cutoff"></i>
           <span>SALES ORDER</span>
         </a>
-      </li><!-- End Contact Page Nav -->
+      </li>
       <li class="nav-item">
         <a class="nav-link collapsed" href="http://127.0.0.1:8000/purchaseinfo">
           <i class="bi bi-receipt"></i>
           <span>PURCHASE ORDER</span>
         </a>
-        </li>
-        
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="http://127.0.0.1:8000/display_form_data">
-            <i class="bi bi-list-check"></i>
-            <span>ORDER TRACK LIST</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="http://127.0.0.1:8000/inventory">
-            <i class="bi bi-cart-check"></i>
-            <span>INVENTORY</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="http://127.0.0.1:8000/employees">
-            <i class="bi bi-cart-check"></i>
-            <span>EMPLOYEE INFO</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="http://127.0.0.1:8000/show_master_component">
-            <i class="bi bi-cart-check"></i>
-            <span>MASTER COMPONENT</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="http://127.0.0.1:8000/instruction_calibration">
-            <i class="bi bi-question-circle"></i>
-            <span>INSTRUCTION CALIBRATION</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link collapsed" href="http://127.0.0.1:8000/showoutsourse">
-            <i class="bi bi-question-circle"></i>
-            <span>OUTSOURSE</span>
-          </a>
-        </li>
-
-      
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="http://127.0.0.1:8000/display_form_data">
+          <i class="bi bi-list-check"></i>
+          <span>ORDER TRACK LIST</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="http://127.0.0.1:8000/inventory">
+          <i class="bi bi-cart-check"></i>
+          <span>INVENTORY</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="http://127.0.0.1:8000/employees">
+          <i class="bi bi-people-fill"></i>
+          <span>EMPLOYEE INFO</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="http://127.0.0.1:8000/show_master_component">
+          <i class="bi bi-hammer"></i>
+          <span>MASTER COMPONENT</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="http://127.0.0.1:8000/instruction_calibration">
+          <i class="bi bi-question-circle"></i>
+          <span>INSTRUCTION CALIBRATION</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="http://127.0.0.1:8000/showoutsourse">
+          <i class="bi bi-truck"></i>
+          <span>OUTSOURSE</span>
+        </a>
+      </li>
     </ul>
-
-  </aside><!-- End Sidebar-->
- {% block body %}{% endblock %}
- 
-  
-  
-
-  
-
-  
- {% block js %}{% endblock %}
+  </aside>
+  {% block body %}{% endblock %}
+  {% block js %}{% endblock %}
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
   <script src="static/assets/vendor/apexcharts/apexcharts.min.js"></script>
   <script src="static/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="static/assets/vendor/chart.js/chart.umd.js"></script>
@@ -236,18 +189,34 @@
   <script src="static/assets/vendor/simple-datatables/simple-datatables.js"></script>
   <script src="static/assets/vendor/tinymce/tinymce.min.js"></script>
   <script src="static/assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
   <script src="static/assets/js/main.js"></script>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-      <script>window.jQuery || document.write('<script src="/docs/4.5/assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="/docs/4.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf" crossorigin="anonymous"></script></body>
-
-
-  
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const searchForm = document.getElementById('search-form');
+      const searchInput = document.getElementById('search-input');
+      searchForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission
+        const query = searchInput.value.toLowerCase().trim();
+        const searchMappings = {
+          'salesorder': 'http://127.0.0.1:8000/salesorder1',
+          'grnentry': 'http://127.0.0.1:8000/grnentry',
+          'grnmainpage': 'http://127.0.0.1:8000/grnmainpage',
+          'materialinfo': 'http://127.0.0.1:8000/materialinfo1',
+          'purchaseinfo': 'http://127.0.0.1:8000/purchaseinfo',
+          'ordertracklist': 'http://127.0.0.1:8000/display_form_data',
+          'inventory': 'http://127.0.0.1:8000/inventory',
+          'employees': 'http://127.0.0.1:8000/employees',
+          'mastercomponent': 'http://127.0.0.1:8000/show_master_component',
+          'instructioncalibration': 'http://127.0.0.1:8000/instruction_calibration',
+          'outsourse': 'http://127.0.0.1:8000/showoutsourse'
+        };
+        if (query in searchMappings) {
+          window.location.href = searchMappings[query];
+        } else {
+          alert('No matching page found.');
+        }
+      });
+    });
+  </script>
 </body>
-
 </html>

@@ -81,6 +81,8 @@ urlpatterns = [
     path('showoutsourse',views.showoutsourse,name='showoutsourse'),
     path('outsourseform',views.outsourseform,name='outsourseform'),
     path('mark_complete/<int:pk>/', views.mark_complete, name='mark_complete'),
+
+       path('notifications/', views.get_notifications, name='notifications'),
     
      
 

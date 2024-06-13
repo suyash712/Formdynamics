@@ -25,7 +25,34 @@
         <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for Part Name, Drawing No, or Material Grade..." class="form-control" style="margin-bottom: 10px;">
     </div>
 
+    <h4>Pending Orders</h4>
     <table class="table table-bordered" id="inventoryTable">
+        <thead>
+            <tr>
+                <th scope="col">PART NAME</th>
+                <th scope="col">DRAWING NO</th>
+                <th scope="col">MATERIAL GRADE</th>
+                <th scope="col">PART COST</th>
+                <th scope="col"> QUANTITY</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for inventory in pending_inventory_list %}
+            <tr>
+                <td>{{ inventory.part_name }}</td>
+                <td>{{ inventory.drawing_no }}</td>
+                <td>{{ inventory.material_grade }}</td>
+                <td>in production</td>
+                <td>{{ inventory.remaining_quantity }}</td>
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4>Completed Orders</h4>
+    <table class="table table-bordered" id="completedInventoryTable">
         <thead>
             <tr>
                 <th scope="col">PART NAME</th>
@@ -37,8 +64,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for inventory in inventory_list %}
-            {% if inventory.remaining_quantity > 0 or inventory.rejected_quantity > 0 %}
+            {% for inventory in completed_inventory_list %}
             <tr>
                 <td>{{ inventory.part_name }}</td>
                 <td>{{ inventory.drawing_no }}</td>
@@ -47,7 +73,6 @@
                 <td>{{ inventory.remaining_quantity }}</td>
                 <td>{{ inventory.rejected_quantity }}</td>
             </tr>
-            {% endif %}
             {% endfor %}
         </tbody>
     </table>
@@ -60,30 +85,34 @@
         var input = document.getElementById('searchInput');
         var filter = input.value.toUpperCase();
         
-        // Get the table and its rows
-        var table = document.getElementById('inventoryTable');
-        var tr = table.getElementsByTagName('tr');
+        // Get the tables and their rows
+        var tables = ['inventoryTable', 'completedInventoryTable'];
+        
+        tables.forEach(function(tableId) {
+            var table = document.getElementById(tableId);
+            var tr = table.getElementsByTagName('tr');
 
-        // Loop through all table rows (except the header) and hide those that don't match the search query
-        for (var i = 1; i < tr.length; i++) {
-            var tdPartName = tr[i].getElementsByTagName('td')[0];
-            var tdDrawingNo = tr[i].getElementsByTagName('td')[1];
-            var tdMaterialGrade = tr[i].getElementsByTagName('td')[2];
+            // Loop through all table rows (except the header) and hide those that don't match the search query
+            for (var i = 1; i < tr.length; i++) {
+                var tdPartName = tr[i].getElementsByTagName('td')[0];
+                var tdDrawingNo = tr[i].getElementsByTagName('td')[1];
+                var tdMaterialGrade = tr[i].getElementsByTagName('td')[2];
 
-            if (tdPartName || tdDrawingNo || tdMaterialGrade) {
-                var txtValuePartName = tdPartName.textContent || tdPartName.innerText;
-                var txtValueDrawingNo = tdDrawingNo.textContent || tdDrawingNo.innerText;
-                var txtValueMaterialGrade = tdMaterialGrade.textContent || tdMaterialGrade.innerText;
+                if (tdPartName || tdDrawingNo || tdMaterialGrade) {
+                    var txtValuePartName = tdPartName.textContent || tdPartName.innerText;
+                    var txtValueDrawingNo = tdDrawingNo.textContent || tdDrawingNo.innerText;
+                    var txtValueMaterialGrade = tdMaterialGrade.textContent || tdMaterialGrade.innerText;
 
-                if (txtValuePartName.toUpperCase().indexOf(filter) > -1 ||
-                    txtValueDrawingNo.toUpperCase().indexOf(filter) > -1 ||
-                    txtValueMaterialGrade.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = '';
-                } else {
-                    tr[i].style.display = 'none';
-                }
-            }       
-        }
+                    if (txtValuePartName.toUpperCase().indexOf(filter) > -1 ||
+                        txtValueDrawingNo.toUpperCase().indexOf(filter) > -1 ||
+                        txtValueMaterialGrade.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = '';
+                    } else {
+                        tr[i].style.display = 'none';
+                    }
+                }       
+            }
+        });
     }
 </script>
 
